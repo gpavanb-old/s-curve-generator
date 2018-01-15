@@ -11,6 +11,8 @@ out{9} = [];
 % --------------------------------------------------------------------------
 function res = fun_eval(t,kmrgd,mdot_,varargin)
 
+global gas options;
+
 % UNPACK ARGUMENTS
 n_sp = varargin{1};
 stoich_prefactor = varargin{2};
@@ -22,12 +24,6 @@ enthalpy_air = varargin{7};
 Y_fuel = cell2mat(varargin(8:n_sp+7));
 Y_ox = cell2mat(varargin(n_sp+8:2*n_sp+7));
 
-% CREATE GAS AND LOAD OPTIONS
-% opt = Options('../data/ch4.yml');
-opt.phi = 1; opt.volume = 1;
-gas = Solution(strcat('../','mech/methane_1step.xml'),'CH4_MP1');
-% gas = Solution(strcat('../',opt.cti_file),opt.mixture_name);
-
 % Last element is internal energy
 Y_trunc = kmrgd(1:end-1);
 T = kmrgd(end);
@@ -35,19 +31,19 @@ T = kmrgd(end);
 % N-1 species equations and 1 enthalpy equation
 res = zeros(n_sp,1);
 Y = [Y_trunc;1-sum(Y_trunc)];
-set(gas,'T',T,'Rho',mass/opt.volume,'Y',Y);
+set(gas,'T',T,'Rho',mass/options.volume,'Y',Y);
 
 h = enthalpy_mass(gas);
 cv = cv_mass(gas);
 prod_rates = netProdRates(gas);
 mw = molecularWeights(gas);
 
-factor = mdot_/(opt.phi * fuel_mw);
+factor = mdot_/(options.phi * fuel_mw);
 mdot_o_ = factor * (1.0 + 3.76) * stoich_prefactor * air_mw;
 mdot_out_ = mdot_ + mdot_o_;
 
 for i = 1:n_sp-1
-    res(i) = prod_rates(i)*opt.volume*mw(i);
+    res(i) = prod_rates(i)*options.volume*mw(i);
     
     % fuel inlet
     res(i) = res(i) + (mdot_)*(Y_fuel(i) - Y(i));

@@ -1,4 +1,7 @@
-function [args,seed] = initialize_reactor(options)
+function [args,seed] = initialize_reactor
+
+global gas options go_backwards;
+
 gas = Solution(strcat('../',options.cti_file),options.mixture_name);
 n_sp = nSpecies(gas);
 
@@ -57,11 +60,12 @@ for idx = 1:length(options.palette)
     combustor = IdealGasReactor(gas);
     gasMass = mass(combustor);
     args(3) = gasMass;
-    equilibrate(gas,'HP');
+    if (~go_backwards)
+         equilibrate(gas,'HP');
+    end
     set(gas,'T',temperature(gas),'Rho',gasMass/options.volume,'Y',massFractions(gas));
     Y = massFractions(gas);
     seed = [Y(1:end-1);temperature(gas)];
-    % disp(seed);
 end
 
 end
