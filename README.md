@@ -30,6 +30,8 @@ Once this is done, just go to `gen_s_curve.m` and
 
 Note that when you go backwards, you should specify high initial mass flow rates and the opposite in the other case.
 
+Running the code multiple times continues the previous solution. Remember that the tangent direction reverses at each limit point.
+
 Following this, options for arc-length continuation can be specified. These are discussed in detail in the MatCont [documentation](https://sourceforge.net/projects/matcont/files/NewestDocumentation/) (Link might expire eventually, go to SourceForge repo if required) 
 
 

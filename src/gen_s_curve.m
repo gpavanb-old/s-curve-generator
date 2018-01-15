@@ -25,6 +25,14 @@ options = Options('../data/ch4.yml');
 [args,seed] = initialize_reactor;
 n_sp = length(seed);
 
+% LOAD DUMP IF REQUIRED
+dump = [];
+if (exist('dump.mat','File'))
+    load('dump.mat');
+    seed = dump(1:end-1,end);
+    start_mdot = dump(end,end);
+end
+
 % RUN MATCONT
 p=[start_mdot,args];ap1=[1];
 [x0,v0]=init_EP_EP(@rhs,seed,p,ap1);
@@ -40,16 +48,15 @@ opt=contset(opt,'Backward',go_backwards);
 opt=contset(opt,'TSearchOrder',0);
 [x,v,s,h,f]=cont(@equilibrium,x0,[],opt);
 
-% PLOT S-CURVE
-semilogx(x(n_sp+1,:),x(n_sp,:),'-o','LineWidth',2);
+% DUMP LAST SOLUTION
+dump = [dump,x];
+save('dump.mat','dump');
+
+%% PLOT S-CURVE
+semilogx(dump(n_sp+1,:),dump(n_sp,:),'-o','LineWidth',2);
 hold on;
 set(gcf,'Position',[100 100 1000 850],'Color',[1 1 1]);
 set(gca,'FontSize',40,'FontName','Times New Roman');
 title('S-Curve');
 xlabel('$\dot{m}$ $(Kg/s)$','Interpreter','Latex');
 ylabel('T (K)');
- 
-% % MARK LIMIT POINTS
-lbl = {s.label}; a = find(strcmp([lbl],'LP'));
-idxs = {s.index}; idxs = [idxs{a}];
-semilogx(x(n_sp+1,idxs),x(n_sp,idxs),'sg','MarkerSize',20,'MarkerFaceColor',[0 1 0]);
