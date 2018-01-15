@@ -1,0 +1,11 @@
+palette: 
+- CH4
+composition: [1.0]
+cti_file: mech/methane_1step.xml # mech/gri30.xml
+mixture_name: CH4_MP1 # gri30
+pressure: 101325.0 
+temperature: 1200.0
+equivalence_ratio: 1.0
+
+# combustor data
+volume: 1.0
